@@ -54,3 +54,22 @@ def remover_livro(id_livro):
     conn.commit()
     conn.close()
     print(f"Livro ID {id_livro} removido com sucesso do banco de dados!")
+
+# 4. Listar livros cadastrados (SELECT)
+def listar_livros():
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT id, titulo, autor, ano, disponivel FROM Livros ORDER BY titulo")
+    livros = [
+        Livro(titulo, autor, ano, bool(disponivel), id)
+        for id, titulo, autor, ano, disponivel in cur.fetchall()
+    ]
+    conn.close()
+
+    if not livros:
+        print("Nenhum livro cadastrado.")
+    else:
+        print("=== Livros cadastrados ===")
+        for livro in livros:
+            print(livro)
+    return livros

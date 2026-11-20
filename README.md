@@ -72,6 +72,14 @@ Saída esperada:
 * **`livro.py`**: Classe `Livro(titulo, autor, ano, disponivel=True, id=None)`
 * **`usuario.py`**: Classe `Usuario(nome, matricula, id=None)`
 * **`emprestimo.py`**: Classe `Emprestimo(livro, usuario, data_emprestimo, data_devolucao, devolvido=False, id=None)` — possui o método `esta_atrasado()`.
+* **`livro.py`** (funções): `cadastrar_livro`, `editar_livro`, `remover_livro`, `listar_livros()` — lista todos os livros cadastrados.
+* **`emprestimo.py`** (funções):
+  * `registrar_emprestimo(id_livro, id_usuario, prazo_dias=14)` — registra o empréstimo e calcula a data de devolução.
+  * `devolver_livro(id_emprestimo)` — registra a devolução e informa se houve atraso.
+  * `renovar_emprestimo(id_emprestimo, dias_extras=14)` — estende o prazo (não permitido se já estiver atrasado).
+  * `listar_livros_emprestados_usuario(id_usuario)` — livros que o usuário ainda não devolveu.
+  * `historico_emprestimos_usuario(id_usuario)` — todos os empréstimos do usuário.
+  * `listar_emprestimos_atrasados()` / `listar_emprestimos_a_vencer(dias=3)` — controle de prazo de devolução.
 * **`dados.py`**: Contém as listas em memória (`livros`, `usuarios`, `emprestimos`) e a função `conectar()`.
 
 ## Estrutura das Tabelas (`BibliotecaDB`)
