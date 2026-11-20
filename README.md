@@ -87,3 +87,11 @@ Saída esperada:
 * **`Livros`**: `id` (INT, PK), `titulo` (VARCHAR), `autor` (VARCHAR), `ano` (INT), `disponivel` (BIT)
 * **`Usuarios`**: `id` (INT, PK), `nome` (VARCHAR), `matricula` (VARCHAR, UNIQUE)
 * **`Emprestimos`**: `id` (INT, PK), `id_livro` (INT, FK), `id_usuario` (INT, FK), `data_emprestimo` (VARCHAR `AAAA-MM-DD`), `data_devolucao` (VARCHAR `AAAA-MM-DD`), `devolvido` (BIT)
+
+## Executando o sistema
+
+Com o banco no ar e a `.venv` ativa, rode o menu interativo:
+
+```bash
+python main.py
+```
