@@ -1,5 +1,5 @@
-from dados import conectar
 from livro import cadastrar_livro, listar_livros
+from gerenciar_usuarios import menu_cadastrar_usuario, menu_listar_usuarios
 from emprestimo import (
     registrar_emprestimo,
     devolver_livro,
@@ -9,27 +9,6 @@ from emprestimo import (
     listar_emprestimos_atrasados,
     listar_emprestimos_a_vencer,
 )
-
-
-def cadastrar_usuario(nome, matricula):
-    conn = conectar()
-    cur = conn.cursor()
-    cur.execute("INSERT INTO Usuarios (nome, matricula) VALUES (?, ?)", (nome, matricula))
-    conn.commit()
-    conn.close()
-    print(f"Usuário '{nome}' cadastrado com sucesso!")
-
-
-def listar_usuarios():
-    conn = conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT id, nome, matricula FROM Usuarios ORDER BY nome")
-    linhas = cur.fetchall()
-    conn.close()
-    if not linhas:
-        print("Nenhum usuário cadastrado.")
-    for id, nome, matricula in linhas:
-        print(f"[{id}] {nome} (Matrícula: {matricula})")
 
 
 def ler_int(msg):
@@ -67,9 +46,9 @@ def main():
             elif opcao == "2":
                 listar_livros()
             elif opcao == "3":
-                cadastrar_usuario(input("Nome: "), input("Matrícula: "))
+                menu_cadastrar_usuario()
             elif opcao == "4":
-                listar_usuarios()
+                menu_listar_usuarios()
             elif opcao == "5":
                 id_livro = ler_int("ID do livro: ")
                 id_usuario = ler_int("ID do usuário: ")
