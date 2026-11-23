@@ -1,9 +1,11 @@
-from livro import cadastrar_livro, listar_livros
-from gerenciar_usuarios import menu_cadastrar_usuario, menu_listar_usuarios
+from livro import buscar_livros, cadastrar_livro, listar_livros
+from gerenciar_usuarios import listar_usuarios, menu_cadastrar_usuario, menu_listar_usuarios
 from emprestimo import (
+    PRAZO_PADRAO_DIAS,
     registrar_emprestimo,
     devolver_livro,
     renovar_emprestimo,
+    listar_emprestimos_ativos,
     listar_livros_emprestados_usuario,
     historico_emprestimos_usuario,
     listar_emprestimos_atrasados,
@@ -17,6 +19,52 @@ def ler_int(msg):
             return int(input(msg))
         except ValueError:
             print("Digite um número válido.")
+
+
+def selecionar_id(registros, titulo, campo, mensagem_vazia, exibir=str):
+    if not registros:
+        print(mensagem_vazia)
+        return None
+
+    print(f"=== {titulo} ===")
+    for registro in registros:
+        print(exibir(registro))
+    ids = {registro.id for registro in registros}
+    while True:
+        escolhido = ler_int(f"ID {campo} [0 para voltar]: ")
+        if escolhido == 0:
+            return None
+        if escolhido in ids:
+            return escolhido
+        print("Escolha um ID da lista ou digite 0 para voltar.")
+
+
+def selecionar_usuario():
+    return selecionar_id(
+        listar_usuarios(), "Usuários cadastrados", "do usuário", "Nenhum usuário cadastrado."
+    )
+
+
+def menu_emprestar():
+    id_livro = selecionar_id(
+        buscar_livros(apenas_disponiveis=True),
+        "Livros disponíveis", "do livro", "Nenhum livro disponível para empréstimo.",
+    )
+    if id_livro is None:
+        return
+    id_usuario = selecionar_usuario()
+    if id_usuario is None:
+        return
+    prazo = input(f"Prazo em dias [{PRAZO_PADRAO_DIAS}]: ").strip()
+    registrar_emprestimo(id_livro, id_usuario, int(prazo) if prazo else PRAZO_PADRAO_DIAS)
+
+
+def selecionar_emprestimo():
+    return selecionar_id(
+        listar_emprestimos_ativos(),
+        "Empréstimos ativos", "do empréstimo", "Nenhum empréstimo ativo.",
+        exibir=lambda emprestimo: f"{emprestimo} | {emprestimo.situacao_prazo()}",
+    )
 
 
 MENU = """
@@ -50,18 +98,17 @@ def main():
             elif opcao == "4":
                 menu_listar_usuarios()
             elif opcao == "5":
-                id_livro = ler_int("ID do livro: ")
-                id_usuario = ler_int("ID do usuário: ")
-                prazo = input("Prazo em dias [14]: ").strip()
-                registrar_emprestimo(id_livro, id_usuario, int(prazo) if prazo else 14)
-            elif opcao == "6":
-                devolver_livro(ler_int("ID do empréstimo: "))
-            elif opcao == "7":
-                renovar_emprestimo(ler_int("ID do empréstimo: "))
-            elif opcao == "8":
-                listar_livros_emprestados_usuario(ler_int("ID do usuário: "))
-            elif opcao == "9":
-                historico_emprestimos_usuario(ler_int("ID do usuário: "))
+                menu_emprestar()
+            elif opcao in ("6", "7"):
+                id_emprestimo = selecionar_emprestimo()
+                if id_emprestimo is not None:
+                    operacao = devolver_livro if opcao == "6" else renovar_emprestimo
+                    operacao(id_emprestimo)
+            elif opcao in ("8", "9"):
+                id_usuario = selecionar_usuario()
+                if id_usuario is not None:
+                    consulta = listar_livros_emprestados_usuario if opcao == "8" else historico_emprestimos_usuario
+                    consulta(id_usuario)
             elif opcao == "10":
                 listar_emprestimos_atrasados()
             elif opcao == "11":

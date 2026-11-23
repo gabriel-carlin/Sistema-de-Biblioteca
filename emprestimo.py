@@ -70,8 +70,15 @@ def _buscar_emprestimos(where="", params=()):
     return emprestimos
 
 
+def listar_emprestimos_ativos():
+    return _buscar_emprestimos("WHERE e.devolvido = 0")
+
+
 # 1. Registrar empréstimo com prazo de devolução
 def registrar_emprestimo(id_livro, id_usuario, prazo_dias=PRAZO_PADRAO_DIAS):
+    if prazo_dias < 0:
+        raise ValueError("O prazo do empréstimo deve ser de 0 dias ou mais.")
+
     conn = conectar()
     cur = conn.cursor()
 
@@ -165,7 +172,7 @@ def listar_livros_emprestados_usuario(id_usuario):
     else:
         print(f"=== Livros emprestados por {emprestimos[0].usuario.nome} ===")
         for emp in emprestimos:
-            print(f"{emp.livro} | Devolução até {emp.data_devolucao} | {emp.situacao_prazo()}")
+            print(f"Empréstimo [{emp.id}] | {emp.livro} | Devolução até {emp.data_devolucao} | {emp.situacao_prazo()}")
     return emprestimos
 
 
@@ -197,6 +204,9 @@ def listar_emprestimos_atrasados():
 
 # 7. Controle de prazos: empréstimos que vencem nos próximos dias
 def listar_emprestimos_a_vencer(dias=3):
+    if dias < 0:
+        raise ValueError("A janela de vencimentos deve ser de 0 dias ou mais.")
+
     hoje = date.today()
     limite = hoje + timedelta(days=dias)
     emprestimos = _buscar_emprestimos(
